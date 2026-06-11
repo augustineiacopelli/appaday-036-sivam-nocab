@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>036 \u2014 Sivam Nocab</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green:   #39ff14;
+    --green-dim: #1a7a00;
+    --green-mid: #22cc00;
+    --red:     #ff3333;
+    --amber:   #ffb000;
+    --bg:      #0a0f0a;
+    --bezel:   #1c1c1c;
+    --screen:  #050d05;
+    --text:    #39ff14;
+  }
+
+  body {
+    background: #111;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Share Tech Mono', monospace;
+    padding: 16px;
+  }
+
+  /* CRT BEZEL */
+  .bezel {
+    background: var(--bezel);
+    border-radius: 18px;
+    padding: 24px 20px 28px;
+    box-shadow:
+      0 0 0 3px #333,
+      0 0 0 6px #222,
+      0 8px 40px rgba(0,0,0,0.9),
+      inset 0 2px 4px rgba(255,255,255,0.04);
+    width: 100%;
+    max-width: 780px;
+    position: relative;
+  }
+
+  .bezel-label {
+    font-family: 'VT323', monospace;
+    font-size: 11px;
+    color: #555;
+    text-align: center;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  /* CRT SCREEN */
+  .screen {
+    background: var(--screen);
+    border-radius: 8px;
+    padding: 24px 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      inset 0 0 60px rgba(0,0,0,0.8),
+      inset 0 0 20px rgba(57,255,20,0.04),
+      0 0 20px rgba(57,255,20,0.08);
+    min-height: 320px;
+  }
+
+  /* Scanlines */
+  .screen::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 3px,
+      rgba(0,0,0,0.18) 3px,
+      rgba(0,0,0,0.18) 4px
+    );
+    pointer-events: none;
+    z-index: 10;
+    border-radius: 8px;
+  }
+
+  /* Phosphor glow flicker */
+  @keyframes flicker {
+    0%,100% { opacity: 1; }
+    92% { opacity: 1; }
+    93% { opacity: 0.96; }
+    94% { opacity: 1; }
+    97% { opacity: 0.98; }
+    98% { opacity: 1; }
+  }
+  .screen-inner {
+    animation: flicker 8s infinite;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  .app-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--green-dim);
+    padding-bottom: 12px;
+  }
+  .app-num {
+    font-family: 'VT323', monospace;
+    font-size: 14px;
+    color: var(--green-dim);
+    letter-spacing: 2px;
+  }
+  .app-title {
+    font-family: 'VT323', monospace;
+    font-size: 28px;
+    color: var(--green);
+    letter-spacing: 3px;
+    text-shadow: 0 0 8px rgba(57,255,20,0.6);
+  }
+  .app-sub {
+    font-size: 11px;
+    color: var(--green-dim);
+    margin-left: auto;
+    letter-spacing: 1px;
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .stat-val {
+    font-family: 'VT323', monospace;
+    font-size: 36px;
+    color: var(--green);
+    text-shadow: 0 0 10px rgba(57,255,20,0.5);
+    line-height: 1;
+  }
+  .stat-lbl {
+    font-size: 10px;
+    color: var(--green-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .stat-divider {
+    width: 1px;
+    background: var(--green-dim);
+    opacity: 0.4;
+    align-self: stretch;
+    margin: 4px 0;
+  }
+
+  /* LESSON SELECTOR */
+  .lesson-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .lesson-lbl {
+    font-size: 11px;
+    color: var(--green-dim);
+    letter-spacing: 2px;
+    white-space: nowrap;
+  }
+  .lesson-btns {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .lesson-btn {
+    background: transparent;
+    border: 1px solid var(--green-dim);
+    color: var(--green-dim);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.1s;
+    white-space: nowrap;
+  }
+  .lesson-btn:hover, .lesson-btn.active {
+    background: rgba(57,255,20,0.1);
+    border-color: var(--green);
+    color: var(--green);
+    text-shadow: 0 0 6px rgba(57,255,20,0.5);
+  }
+
+  /* TARGET TEXT */
+  .target-label {
+    font-size: 10px;
+    color: var(--green-dim);
+    letter-spacing: 3px;
+    margin-bottom: 6px;
+  }
+  .target-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: clamp(14px, 2.5vw, 18px);
+    line-height: 1.9;
+    color: var(--green-dim);
+    margin-bottom: 14px;
+    word-break: break-all;
+    letter-spacing: 0.5px;
+    min-height: 60px;
+    background: rgba(57,255,20,0.02);
+    padding: 8px 10px;
+    border-radius: 4px;
+    border: 1px solid rgba(57,255,20,0.08);
+  }
+  .target-text span.correct  { color: var(--green-mid); }
+  .target-text span.wrong    { color: var(--red); background: rgba(255,51,51,0.15); }
+  .target-text span.cursor   { border-bottom: 2px solid var(--green); }
+  .target-text span.pending  { color: #2a5520; }
+
+  @keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+  .target-text span.cursor { animation: blink 0.75s step-end infinite; }
+
+  /* INPUT AREA */
+  .input-label {
+    font-size: 10px;
+    color: var(--green-dim);
+    letter-spacing: 3px;
+    margin-bottom: 6px;
+  }
+  .typing-input {
+    width: 100%;
+    background: rgba(57,255,20,0.03);
+    border: 1px solid var(--green-dim);
+    border-radius: 4px;
+    color: var(--green);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: clamp(14px, 2.5vw, 18px);
+    padding: 10px;
+    outline: none;
+    caret-color: var(--green);
+    letter-spacing: 0.5px;
+    resize: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .typing-input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 10px rgba(57,255,20,0.12);
+  }
+  .typing-input:disabled {
+    opacity: 0.5;
+  }
+
+  /* RESULT OVERLAY */
+  .result-panel {
+    display: none;
+    text-align: center;
+    padding: 20px 10px;
+  }
+  .result-panel.show { display: block; }
+  .result-grade {
+    font-family: 'VT323', monospace;
+    font-size: 72px;
+    line-height: 1;
+    text-shadow: 0 0 20px currentColor;
+    margin-bottom: 8px;
+  }
+  .grade-s { color: var(--green); }
+  .grade-a { color: #88ff44; }
+  .grade-b { color: var(--amber); }
+  .grade-c { color: #ff8800; }
+  .grade-d { color: var(--red); }
+
+  .result-stats {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+  .result-stat-val {
+    font-family: 'VT323', monospace;
+    font-size: 42px;
+    color: var(--green);
+    text-shadow: 0 0 10px rgba(57,255,20,0.4);
+    line-height: 1;
+  }
+  .result-stat-lbl {
+    font-size: 10px;
+    color: var(--green-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .result-msg {
+    font-size: 13px;
+    color: var(--green-dim);
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+
+  /* BUTTONS */
+  .btn-primary {
+    background: transparent;
+    border: 2px solid var(--green);
+    color: var(--green);
+    font-family: 'VT323', monospace;
+    font-size: 24px;
+    padding: 8px 32px;
+    border-radius: 3px;
+    cursor: pointer;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow: 0 0 8px rgba(57,255,20,0.5);
+    box-shadow: 0 0 10px rgba(57,255,20,0.1);
+    transition: all 0.15s;
+  }
+  .btn-primary:hover {
+    background: rgba(57,255,20,0.12);
+    box-shadow: 0 0 20px rgba(57,255,20,0.25);
+  }
+
+  /* FOOTER */
+  .screen-footer {
+    margin-top: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px solid var(--green-dim);
+    opacity: 0.6;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .screen-footer a {
+    color: var(--green-dim);
+    text-decoration: none;
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+  .screen-footer a:hover { color: var(--green); }
+  .screen-footer span {
+    font-size: 10px;
+    color: var(--green-dim);
+    letter-spacing: 1px;
+  }
+
+  /* PROGRESS BAR */
+  .progress-track {
+    height: 3px;
+    background: rgba(57,255,20,0.1);
+    border-radius: 2px;
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    transition: width 0.1s;
+    width: 0%;
+  }
+
+  /* MOBILE */
+  @media (max-width: 500px) {
+    .bezel { padding: 14px 10px 18px; }
+    .screen { padding: 16px 12px; }
+    .app-title { font-size: 22px; }
+    .stat-val { font-size: 28px; }
+    .stats-bar { gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bezel">
+  <div class="bezel-label">SIVAM NOCAB TYPING SYSTEM \u2014 REV 1.0</div>
+  <div class="screen">
+    <div class="screen-inner">
+
+      <!-- HEADER -->
+      <div class="app-header">
+        <span class="app-num">APP 036</span>
+        <span class="app-title">SIVAM NOCAB</span>
+        <span class="app-sub">TYPING TRAINER</span>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-bar">
+        <div class="stat">
+          <span class="stat-val" id="wpm-val">0</span>
+          <span class="stat-lbl">WPM</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-val" id="acc-val">100</span>
+          <span class="stat-lbl">ACC %</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-val" id="streak-val">0</span>
+          <span class="stat-lbl">STREAK</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-val" id="best-val">0</span>
+          <span class="stat-lbl">BEST WPM</span>
+        </div>
+      </div>
+
+      <!-- LESSON SELECTOR -->
+      <div class="lesson-row">
+        <span class="lesson-lbl">LESSON:</span>
+        <div class="lesson-btns" id="lesson-btns"></div>
+      </div>
+
+      <!-- MAIN TYPING AREA (shown during typing) -->
+      <div id="typing-area">
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="target-label">TARGET</div>
+        <div class="target-text" id="target-display"></div>
+        <div class="input-label">YOUR INPUT</div>
+        <textarea class="typing-input" id="typing-input" rows="3" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" placeholder="Start typing to begin..."></textarea>
+      </div>
+
+      <!-- RESULT PANEL (shown on completion) -->
+      <div class="result-panel" id="result-panel">
+        <div class="result-grade" id="result-grade">S</div>
+        <div class="result-stats">
+          <div class="stat">
+            <div class="result-stat-val" id="r-wpm">0</div>
+            <div class="result-stat-lbl">WPM</div>
+          </div>
+          <div class="stat">
+            <div class="result-stat-val" id="r-acc">0</div>
+            <div class="result-stat-lbl">ACCURACY</div>
+          </div>
+          <div class="stat">
+            <div class="result-stat-val" id="r-time">0</div>
+            <div class="result-stat-lbl">SECONDS</div>
+          </div>
+        </div>
+        <div class="result-msg" id="result-msg"></div>
+        <button class="btn-primary" id="next-btn" onclick="nextLesson()">&gt; NEXT LESSON</button>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="screen-footer">
+        <a href="https://augustineiacopelli.github.io/appaday/" target="_blank">&larr; APPADAY PORTFOLIO</a>
+        <span id="status-txt">READY</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+
+// ── LESSONS ────────────────────────────────────────────────────────────────────
+var LESSONS = [
+  {
+    id: 'L1',
+    label: 'Home Row',
+    passages: [
+      'asd jkl asd jkl asdf jkl; asdf jkl; a s d f j k l ;',
+      'add fall glad flask salad flag had lad sad dad gal',
+      'falls halls glass flasks salads flags lads dads gals',
+      'ask a lass a glad glad salad fad shall fall a lad half'
+    ]
+  },
+  {
+    id: 'L2',
+    label: 'Top Row',
+    passages: [
+      'qwe rty uio qwe rty uio qwer tyui qwer tyui',
+      'quiet write tower route power outer outer pique quire',
+      'your query power tower outer write quote equip quite',
+      'we require two quiet tower routes to our outer port'
+    ]
+  },
+  {
+    id: 'L3',
+    label: 'Full Alpha',
+    passages: [
+      'the quick brown fox jumps over the lazy dog',
+      'pack my box with five dozen liquor jugs',
+      'how vexingly quick daft zebras jump',
+      'the five boxing wizards jump quickly'
+    ]
+  },
+  {
+    id: 'L4',
+    label: 'Numbers',
+    passages: [
+      '1234567890 1234567890 123 456 789 0',
+      'call 1-800-555-0199 or dial ext 247 or 381',
+      'order 36 units at $12.50 each totaling $450.00',
+      'from 1492 to 1776 to 1865 to 1969 to 2001'
+    ]
+  },
+  {
+    id: 'L5',
+    label: 'Common Words',
+    passages: [
+      'the be to of and a in that have it for not on with',
+      'he as you do at this but his by from they we say her',
+      'or an will my one all would there their what so up',
+      'if about who get which go me when make can like time'
+    ]
+  },
+  {
+    id: 'L6',
+    label: 'Sentences',
+    passages: [
+      'Every day is a chance to build something new and ship it before midnight.',
+      'Consistency compounds faster than talent when the work is done daily.',
+      'The best way to learn is to build something real and let people use it.',
+      'Small apps shipped every day add up to a portfolio that speaks for itself.'
+    ]
+  },
+  {
+    id: 'L7',
+    label: 'Symbols',
+    passages: [
+      '! @ # $ % ^ & * ( ) _ + = - [ ] { } | ; : \' " , . < > / ?',
+      'email: user@example.com | phone: (316) 555-0123',
+      'price: $19.99 | discount: 15% | savings: $3.00',
+      'function add(a, b) { return a + b; } // returns sum'
+    ]
+  }
+];
+
+// ── STATE ──────────────────────────────────────────────────────────────────────
+var currentLesson = 0;
+var passageIdx = 0;
+var target = '';
+var typed = '';
+var startTime = null;
+var timerInterval = null;
+var totalKeystrokes = 0;
+var wrongKeystrokes = 0;
+var bestWpm = parseInt(localStorage.getItem('sivam_best') || '0');
+var streak = parseInt(localStorage.getItem('sivam_streak') || '0');
+
+// ── INIT ───────────────────────────────────────────────────────────────────────
+function init() {
+  buildLessonBtns();
+  document.getElementById('best-val').textContent = bestWpm;
+  document.getElementById('streak-val').textContent = streak;
+  loadLesson(0, 0);
+  document.getElementById('typing-input').addEventListener('input', onInput);
+  document.getElementById('typing-input').addEventListener('keydown', onKeydown);
+}
+
+function buildLessonBtns() {
+  var container = document.getElementById('lesson-btns');
+  container.innerHTML = '';
+  for (var i = 0; i < LESSONS.length; i++) {
+    var btn = document.createElement('button');
+    btn.className = 'lesson-btn' + (i === 0 ? ' active' : '');
+    btn.textContent = LESSONS[i].label;
+    btn.setAttribute('data-idx', i);
+    btn.onclick = (function(idx) {
+      return function() { selectLesson(idx); };
+    })(i);
+    container.appendChild(btn);
+  }
+}
+
+function selectLesson(idx) {
+  currentLesson = idx;
+  passageIdx = 0;
+  var btns = document.querySelectorAll('.lesson-btn');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.toggle('active', parseInt(btns[i].getAttribute('data-idx')) === idx);
+  }
+  loadLesson(idx, 0);
+}
+
+function loadLesson(lessonIdx, pIdx) {
+  currentLesson = lessonIdx;
+  passageIdx = pIdx;
+  target = LESSONS[lessonIdx].passages[pIdx];
+  typed = '';
+  startTime = null;
+  totalKeystrokes = 0;
+  wrongKeystrokes = 0;
+  clearInterval(timerInterval);
+
+  var input = document.getElementById('typing-input');
+  input.value = '';
+  input.disabled = false;
+
+  document.getElementById('typing-area').style.display = 'block';
+  document.getElementById('result-panel').classList.remove('show');
+  document.getElementById('progress-fill').style.width = '0%';
+  document.getElementById('wpm-val').textContent = '0';
+  document.getElementById('acc-val').textContent = '100';
+  document.getElementById('status-txt').textContent = 'READY';
+
+  renderTarget('');
+  input.focus();
+}
+
+// ── INPUT HANDLING ─────────────────────────────────────────────────────────────
+function onKeydown(e) {
+  // Prevent tab
+  if (e.key === 'Tab') { e.preventDefault(); return; }
+}
+
+function onInput(e) {
+  var input = document.getElementById('typing-input');
+  var value = input.value;
+
+  // Strip newlines
+  value = value.replace(/\n/g, '');
+  input.value = value;
+
+  // Start timer on first keystroke
+  if (!startTime && value.length > 0) {
+    startTime = Date.now();
+    timerInterval = setInterval(updateLiveStats, 300);
+    document.getElementById('status-txt').textContent = 'TYPING...';
+  }
+
+  totalKeystrokes++;
+  typed = value;
+
+  // Count wrong (characters typed that don't match target)
+  var errors = 0;
+  for (var i = 0; i < value.length; i++) {
+    if (i >= target.length || value[i] !== target[i]) errors++;
+  }
+  wrongKeystrokes = errors;
+
+  renderTarget(value);
+
+  var pct = Math.min(100, Math.round((value.length / target.length) * 100));
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  updateLiveStats();
+
+  // Check completion
+  if (value === target) {
+    finishLesson();
+  }
+}
+
+function renderTarget(value) {
+  var display = document.getElementById('target-display');
+  var html = '';
+  for (var i = 0; i < target.length; i++) {
+    var ch = target[i] === ' ' ? '&nbsp;' : target[i];
+    if (i < value.length) {
+      if (value[i] === target[i]) {
+        html += '<span class="correct">' + ch + '</span>';
+      } else {
+        html += '<span class="wrong">' + ch + '</span>';
+      }
+    } else if (i === value.length) {
+      html += '<span class="cursor">' + ch + '</span>';
+    } else {
+      html += '<span class="pending">' + ch + '</span>';
+    }
+  }
+  display.innerHTML = html;
+}
+
+function updateLiveStats() {
+  if (!startTime) return;
+  var elapsed = (Date.now() - startTime) / 1000 / 60; // minutes
+  var words = typed.length / 5;
+  var wpm = elapsed > 0 ? Math.round(words / elapsed) : 0;
+  var acc = totalKeystrokes > 0
+    ? Math.round(((totalKeystrokes - wrongKeystrokes) / totalKeystrokes) * 100)
+    : 100;
+  document.getElementById('wpm-val').textContent = wpm;
+  document.getElementById('acc-val').textContent = Math.max(0, acc);
+}
+
+// ── FINISH ─────────────────────────────────────────────────────────────────────
+function finishLesson() {
+  clearInterval(timerInterval);
+  var input = document.getElementById('typing-input');
+  input.disabled = true;
+
+  var elapsed = (Date.now() - startTime) / 1000;
+  var wpm = Math.round((target.length / 5) / (elapsed / 60));
+  var acc = totalKeystrokes > 0
+    ? Math.round(((totalKeystrokes - wrongKeystrokes) / totalKeystrokes) * 100)
+    : 100;
+  acc = Math.max(0, acc);
+
+  // Update best
+  if (wpm > bestWpm) {
+    bestWpm = wpm;
+    localStorage.setItem('sivam_best', bestWpm);
+    document.getElementById('best-val').textContent = bestWpm;
+  }
+
+  // Update streak
+  streak++;
+  localStorage.setItem('sivam_streak', streak);
+  document.getElementById('streak-val').textContent = streak;
+
+  // Grade
+  var grade, gradeClass, msg;
+  if (acc >= 98 && wpm >= 60) {
+    grade = 'S'; gradeClass = 'grade-s';
+    msg = 'FLAWLESS EXECUTION. HOME ROW HERO.';
+  } else if (acc >= 95 && wpm >= 45) {
+    grade = 'A'; gradeClass = 'grade-a';
+    msg = 'EXCELLENT. FINGERS ON FIRE.';
+  } else if (acc >= 90 && wpm >= 30) {
+    grade = 'B'; gradeClass = 'grade-b';
+    msg = 'SOLID WORK. KEEP THE RHYTHM.';
+  } else if (acc >= 80 && wpm >= 20) {
+    grade = 'C'; gradeClass = 'grade-c';
+    msg = 'GETTING THERE. SLOW DOWN TO SPEED UP.';
+  } else {
+    grade = 'D'; gradeClass = 'grade-d';
+    msg = 'PRACTICE MAKES PERFECT. TRY AGAIN.';
+  }
+
+  document.getElementById('typing-area').style.display = 'none';
+  var panel = document.getElementById('result-panel');
+  panel.classList.add('show');
+
+  var gradeEl = document.getElementById('result-grade');
+  gradeEl.textContent = grade;
+  gradeEl.className = 'result-grade ' + gradeClass;
+  document.getElementById('r-wpm').textContent = wpm;
+  document.getElementById('r-acc').textContent = acc + '%';
+  document.getElementById('r-time').textContent = Math.round(elapsed);
+  document.getElementById('result-msg').textContent = msg;
+  document.getElementById('status-txt').textContent = 'COMPLETE';
+
+  // Update live stats display too
+  document.getElementById('wpm-val').textContent = wpm;
+  document.getElementById('acc-val').textContent = acc;
+}
+
+// ── NEXT LESSON ────────────────────────────────────────────────────────────────
+window.nextLesson = function() {
+  var lesson = LESSONS[currentLesson];
+  var nextPIdx = (passageIdx + 1) % lesson.passages.length;
+
+  // If we've cycled through all passages, move to next lesson
+  if (nextPIdx === 0) {
+    var nextLesson = (currentLesson + 1) % LESSONS.length;
+    var btns = document.querySelectorAll('.lesson-btn');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].classList.toggle('active', parseInt(btns[i].getAttribute('data-idx')) === nextLesson);
+    }
+    loadLesson(nextLesson, 0);
+  } else {
+    loadLesson(currentLesson, nextPIdx);
+  }
+};
+
+init();
+
+})();
+</script>
+</body>
+</html>
