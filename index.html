@@ -43,6 +43,10 @@
       inset 0 2px 4px rgba(255,255,255,0.04);
     width: 100%;
     max-width: 780px;
+    height: 100%;
+    max-height: calc(100dvh - 32px);
+    display: flex;
+    flex-direction: column;
     position: relative;
   }
 
@@ -67,7 +71,10 @@
       inset 0 0 60px rgba(0,0,0,0.8),
       inset 0 0 20px rgba(57,255,20,0.04),
       0 0 20px rgba(57,255,20,0.08);
-    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
   }
 
   /* Scanlines */
@@ -100,6 +107,10 @@
     animation: flicker 8s infinite;
     position: relative;
     z-index: 1;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
   }
 
   /* HEADER */
@@ -129,6 +140,153 @@
     color: var(--green-dim);
     margin-left: auto;
     letter-spacing: 1px;
+  }
+
+  /* OPERATOR BADGE */
+  .operator-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--green-dim);
+    letter-spacing: 1px;
+    margin-left: auto;
+  }
+  .operator-name {
+    color: var(--green);
+    text-shadow: 0 0 6px rgba(57,255,20,0.4);
+  }
+  .switch-link {
+    background: none;
+    border: none;
+    color: var(--green-dim);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+  }
+  .switch-link:hover { color: var(--green); }
+
+  /* LOGIN OVERLAY */
+  .login-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 0;
+    text-align: center;
+    padding: 20px 10px;
+  }
+  .login-title {
+    font-family: 'VT323', monospace;
+    font-size: 26px;
+    color: var(--green);
+    letter-spacing: 4px;
+    text-shadow: 0 0 10px rgba(57,255,20,0.6);
+    margin-bottom: 4px;
+  }
+  .login-sub {
+    font-size: 11px;
+    color: var(--green-dim);
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+  }
+  .profile-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 320px;
+    margin-bottom: 20px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .profile-btn {
+    background: rgba(57,255,20,0.04);
+    border: 1px solid var(--green-dim);
+    color: var(--green);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    padding: 10px 14px;
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    letter-spacing: 1px;
+    transition: all 0.1s;
+  }
+  .profile-btn:hover {
+    background: rgba(57,255,20,0.1);
+    border-color: var(--green);
+    box-shadow: 0 0 10px rgba(57,255,20,0.15);
+  }
+  .profile-btn span.pb-stats {
+    font-size: 10px;
+    color: var(--green-dim);
+    letter-spacing: 1px;
+  }
+  .login-divider {
+    width: 100%;
+    max-width: 320px;
+    border-top: 1px solid var(--green-dim);
+    opacity: 0.4;
+    margin: 4px 0 16px;
+  }
+  .login-input-row {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    max-width: 320px;
+  }
+  .login-input {
+    flex: 1;
+    background: rgba(57,255,20,0.03);
+    border: 1px solid var(--green-dim);
+    border-radius: 4px;
+    color: var(--green);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 16px;
+    padding: 10px;
+    outline: none;
+    caret-color: var(--green);
+    letter-spacing: 1px;
+    -webkit-appearance: none;
+  }
+  .login-input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 10px rgba(57,255,20,0.12);
+  }
+  .login-input::placeholder { color: var(--green-dim); opacity: 0.6; }
+  .login-go {
+    background: transparent;
+    border: 1px solid var(--green);
+    color: var(--green);
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    padding: 0 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    text-shadow: 0 0 6px rgba(57,255,20,0.4);
+  }
+  .login-go:hover { background: rgba(57,255,20,0.1); }
+  .login-error {
+    font-size: 10px;
+    color: var(--red);
+    letter-spacing: 1px;
+    margin-top: 10px;
+    min-height: 14px;
+  }
+
+  #app-main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
   }
 
   /* STATS BAR */
@@ -219,7 +377,6 @@
     margin-bottom: 14px;
     word-break: break-all;
     letter-spacing: 0.5px;
-    min-height: 60px;
     background: rgba(57,255,20,0.02);
     padding: 8px 10px;
     border-radius: 4px;
@@ -390,11 +547,32 @@
   <div class="screen">
     <div class="screen-inner">
 
+      <!-- LOGIN SCREEN -->
+      <div class="login-screen" id="login-screen">
+        <div class="login-title">OPERATOR LOGIN</div>
+        <div class="login-sub">SELECT OR CREATE A PROFILE TO BEGIN</div>
+        <div class="profile-list" id="profile-list"></div>
+        <div class="login-divider" id="login-divider" style="display:none;"></div>
+        <div class="login-input-row">
+          <input type="text" class="login-input" id="profile-input" placeholder="ENTER NEW NAME" maxlength="16" autocomplete="off" autocapitalize="off" spellcheck="false">
+          <button class="login-go" onclick="createProfile()">GO</button>
+        </div>
+        <div class="login-error" id="login-error"></div>
+      </div>
+
+      <!-- MAIN APP (hidden until login) -->
+      <div id="app-main" style="display:none;">
+
       <!-- HEADER -->
       <div class="app-header">
         <span class="app-num">APP 036</span>
         <span class="app-title">SIVAM NOCAB</span>
-        <span class="app-sub">TYPING TRAINER</span>
+        <span class="app-sub" id="app-sub-label">TYPING TRAINER</span>
+        <div class="operator-badge" id="operator-badge" style="display:none;">
+          <span>OPERATOR:</span>
+          <span class="operator-name" id="operator-name"></span>
+          <button class="switch-link" onclick="switchProfile()">SWITCH</button>
+        </div>
       </div>
 
       <!-- STATS -->
@@ -461,6 +639,8 @@
         <a href="https://augustineiacopelli.github.io/appaday/" target="_blank">&larr; APPADAY PORTFOLIO</a>
         <span id="status-txt">READY</span>
       </div>
+
+      </div><!-- /app-main -->
 
     </div>
   </div>
@@ -552,17 +732,156 @@ var startTime = null;
 var timerInterval = null;
 var totalKeystrokes = 0;
 var wrongKeystrokes = 0;
-var bestWpm = parseInt(localStorage.getItem('sivam_best') || '0');
-var streak = parseInt(localStorage.getItem('sivam_streak') || '0');
+var bestWpm = 0;
+var streak = 0;
+var profile = null;
+
+// ── PROFILES ───────────────────────────────────────────────────────────────────
+var PROFILES_KEY = 'sivam_profiles';
+
+function loadProfiles() {
+  try {
+    var raw = localStorage.getItem(PROFILES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) { return []; }
+}
+
+function saveProfiles(list) {
+  try { localStorage.setItem(PROFILES_KEY, JSON.stringify(list)); } catch (e) {}
+}
+
+function saveCurrentProfile() {
+  if (!profile) return;
+  var list = loadProfiles();
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].name === profile.name) { list[i] = profile; saveProfiles(list); return; }
+  }
+  list.push(profile);
+  saveProfiles(list);
+}
+
+function renderProfileList() {
+  var list = loadProfiles();
+  var container = document.getElementById('profile-list');
+  var divider = document.getElementById('login-divider');
+  container.innerHTML = '';
+  if (list.length === 0) {
+    divider.style.display = 'none';
+    return;
+  }
+  divider.style.display = 'block';
+  list.sort(function(a, b) { return (b.lastSeen || 0) - (a.lastSeen || 0); });
+  for (var i = 0; i < list.length; i++) {
+    var p = list[i];
+    var btn = document.createElement('button');
+    btn.className = 'profile-btn';
+    var nameSpan = document.createElement('span');
+    nameSpan.textContent = p.name;
+    var statsSpan = document.createElement('span');
+    statsSpan.className = 'pb-stats';
+    statsSpan.textContent = 'BEST ' + (p.bestWpm || 0) + ' WPM \u00b7 STREAK ' + (p.streak || 0);
+    btn.appendChild(nameSpan);
+    btn.appendChild(statsSpan);
+    btn.onclick = (function(name) {
+      return function() { loginProfile(name); };
+    })(p.name);
+    container.appendChild(btn);
+  }
+}
+
+function showLogin() {
+  clearInterval(timerInterval);
+  document.getElementById('login-error').textContent = '';
+  document.getElementById('profile-input').value = '';
+  renderProfileList();
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app-main').style.display = 'none';
+}
+
+window.createProfile = function() {
+  var input = document.getElementById('profile-input');
+  var name = input.value.trim();
+  var errEl = document.getElementById('login-error');
+  if (!name) { errEl.textContent = 'ENTER A NAME TO CONTINUE'; return; }
+  if (name.length > 16) name = name.substring(0, 16);
+  var list = loadProfiles();
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].name.toLowerCase() === name.toLowerCase()) {
+      loginProfile(list[i].name);
+      return;
+    }
+  }
+  errEl.textContent = '';
+  loginProfile(name);
+};
+
+function loginProfile(name) {
+  var list = loadProfiles();
+  var found = null;
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].name === name) { found = list[i]; break; }
+  }
+  if (!found) {
+    found = { name: name, bestWpm: 0, streak: 0, lesson: 0, passage: 0, lastSeen: Date.now() };
+    list.push(found);
+    saveProfiles(list);
+  }
+  profile = found;
+  profile.lastSeen = Date.now();
+  bestWpm = profile.bestWpm || 0;
+  streak = profile.streak || 0;
+  saveCurrentProfile();
+
+  try { localStorage.setItem('sivam_last_profile', profile.name); } catch (e) {}
+
+  document.getElementById('operator-name').textContent = profile.name;
+  document.getElementById('operator-badge').style.display = 'flex';
+  document.getElementById('best-val').textContent = bestWpm;
+  document.getElementById('streak-val').textContent = streak;
+
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-main').style.display = 'flex';
+
+  var lesson = profile.lesson || 0;
+  var passage = profile.passage || 0;
+  if (lesson >= LESSONS.length) lesson = 0;
+  if (passage >= LESSONS[lesson].passages.length) passage = 0;
+
+  var btns = document.querySelectorAll('.lesson-btn');
+  for (var j = 0; j < btns.length; j++) {
+    btns[j].classList.toggle('active', parseInt(btns[j].getAttribute('data-idx')) === lesson);
+  }
+
+  loadLesson(lesson, passage);
+}
+
+window.switchProfile = function() {
+  saveCurrentProfile();
+  profile = null;
+  showLogin();
+};
 
 // ── INIT ───────────────────────────────────────────────────────────────────────
 function init() {
   buildLessonBtns();
-  document.getElementById('best-val').textContent = bestWpm;
-  document.getElementById('streak-val').textContent = streak;
-  loadLesson(0, 0);
   document.getElementById('typing-input').addEventListener('input', onInput);
   document.getElementById('typing-input').addEventListener('keydown', onKeydown);
+  document.getElementById('profile-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') createProfile();
+  });
+
+  var lastName = null;
+  try { lastName = localStorage.getItem('sivam_last_profile'); } catch (e) {}
+  if (lastName) {
+    var list = loadProfiles();
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].name === lastName) {
+        loginProfile(lastName);
+        return;
+      }
+    }
+  }
+  showLogin();
 }
 
 function buildLessonBtns() {
@@ -599,6 +918,12 @@ function loadLesson(lessonIdx, pIdx) {
   totalKeystrokes = 0;
   wrongKeystrokes = 0;
   clearInterval(timerInterval);
+
+  if (profile) {
+    profile.lesson = lessonIdx;
+    profile.passage = pIdx;
+    saveCurrentProfile();
+  }
 
   var input = document.getElementById('typing-input');
   input.value = '';
@@ -707,14 +1032,18 @@ function finishLesson() {
   // Update best
   if (wpm > bestWpm) {
     bestWpm = wpm;
-    localStorage.setItem('sivam_best', bestWpm);
     document.getElementById('best-val').textContent = bestWpm;
   }
 
   // Update streak
   streak++;
-  localStorage.setItem('sivam_streak', streak);
   document.getElementById('streak-val').textContent = streak;
+
+  if (profile) {
+    profile.bestWpm = bestWpm;
+    profile.streak = streak;
+    saveCurrentProfile();
+  }
 
   // Grade
   var grade, gradeClass, msg;
