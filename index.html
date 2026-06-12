@@ -20,15 +20,20 @@
     --text:    #39ff14;
   }
 
+  html, body {
+    height: 100%;
+  }
+
   body {
     background: #111;
-    min-height: 100dvh;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     font-family: 'Share Tech Mono', monospace;
     padding: 16px;
+    overflow: hidden;
   }
 
   /* CRT BEZEL */
@@ -44,7 +49,6 @@
     width: 100%;
     max-width: 780px;
     height: 100%;
-    max-height: calc(100dvh - 32px);
     display: flex;
     flex-direction: column;
     position: relative;
